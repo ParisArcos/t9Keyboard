@@ -8,7 +8,7 @@ const getValues = (input) => {
   let inputLetters = [];
 
   const t9KeyboardMatrix = JSON.parse(
-    readFileSync(path.resolve("config/t9_keyboard.json"), "utf8")
+    readFileSync(path.resolve("config/t9_matrix.json"), "utf8")
   );
 
   input.forEach((number) => {
@@ -92,6 +92,7 @@ const readWordsFromTree = (node) => {
 };
 
 export const suggestWords = (input) => {
+  words = [];
   const tree = createTree(input);
   const suggestedWords = readWordsFromTree(tree);
   return suggestedWords;
