@@ -5,13 +5,14 @@ let rootNode = {};
 let words = [];
 
 const getValues = (input) => {
+  const inputArray = input.split("");
   let inputLetters = [];
 
   const t9KeyboardMatrix = JSON.parse(
     readFileSync(path.resolve("config/t9_matrix.json"), "utf8")
   );
 
-  input.forEach((number) => {
+  inputArray.forEach((number) => {
     inputLetters.push(t9KeyboardMatrix[`${number}`]);
   });
   return inputLetters;
