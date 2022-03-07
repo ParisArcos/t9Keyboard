@@ -10,7 +10,7 @@ const TNinePanel = () => {
   const [suggestedWords, setSuggestedWords] = useState([]);
 
   const NUMBERS = {
-    0: " ",
+    0: '" "',
     1: "a, b, c",
     2: "d, e, f",
     3: "g, h, i",
@@ -29,7 +29,7 @@ const TNinePanel = () => {
   }, [inputNumbers]);
 
   const handleChange = (e) => {
-    console.log(inputNumbers);
+    console.log(suggestedWords);
     setInputNumbers({
       //* actual state
       ...inputNumbers,
@@ -38,7 +38,6 @@ const TNinePanel = () => {
   };
 
   const handleClick = (value) => {
-    console.log(inputNumbers);
     setInputNumbers({
       //* actual state
 
@@ -58,12 +57,9 @@ const TNinePanel = () => {
 
   return (
     <>
-      <div className="text-red-600 font-black text-5xl ">
-        T9 Keyboard Simulator
-      </div>
-
+      <div className="text-red-600 font-black text-5xl ">T9 Keyboard</div>
       <form className="">
-        <div className="my-5">
+        <div className=" mt-5">
           <label
             htmlFor="inputNumbers"
             className="uppercase text-gray-600 block text-xl- font-bold"
@@ -81,7 +77,7 @@ const TNinePanel = () => {
           />
         </div>
       </form>
-      <div>
+      <div className="my-5 flex flex-wrap justify-center">
         {Object.entries(NUMBERS).map(([key, val]) => (
           <Keyboard
             key={key}
@@ -92,9 +88,11 @@ const TNinePanel = () => {
         ))}
       </div>
       {inputNumbers.numbers !== "" && (
-        <div className=" bg-white w-auto shadow flex flex-wrap rounded-lg px-5 py-3 ">
+        <div className=" bg-white w-auto max-h-96 shadow flex overflow-y-auto md:h-40 flex-wrap rounded-lg px-5 py-3 ">
           {suggestedWords !== 0 &&
-            suggestedWords.map((word) => <WordBox key={word} word={word} />)}
+            suggestedWords.map(
+              (word) => word !== null && <WordBox key={word} word={word} />
+            )}
         </div>
       )}
     </>
