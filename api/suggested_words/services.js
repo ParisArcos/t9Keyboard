@@ -1,5 +1,6 @@
 import { readFileSync } from "fs";
 import path from "path";
+import wordListPath from "word-list";
 
 let rootNode = {};
 let words = [];
@@ -24,9 +25,7 @@ const createTree = (input) => {
 
   inputLetters.forEach((arrayOfLetters) => {
     const is_leaf =
-      inputLetters.indexOf(arrayOfLetters) === inputLetters.length - 1
-        ? true
-        : false;
+      arrayOfLetters === inputLetters[inputLetters.length - 1] ? true : false;
 
     createNode(arrayOfLetters, is_leaf, previousParents);
 
@@ -80,7 +79,9 @@ const readWordsFromTree = (node) => {
     }
     words.push(
       wordArray.reverse().reduce((word, letter) => {
-        return word + letter;
+        let completeWord = word + letter;
+
+        return completeWord;
       })
     );
   }
@@ -92,9 +93,21 @@ const readWordsFromTree = (node) => {
   return words;
 };
 
+const filterWords = (unfilteredWords) => {
+  const wordListArray = readFileSync(wordListPath, "utf8").split("\n");
+  let filteredList = [];
+  unfilteredWords.forEach((word) => {
+    if (wordListArray.includes(word)) {
+      filteredList.push(word);
+    }
+  });
+  return filteredList;
+};
+
 export const suggestWords = (input) => {
   words = [];
   const tree = createTree(input);
-  const suggestedWords = readWordsFromTree(tree);
+  const unfilteredWords = readWordsFromTree(tree);
+  const suggestedWords = filterWords(unfilteredWords);
   return suggestedWords;
 };

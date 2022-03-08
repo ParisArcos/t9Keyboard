@@ -29,7 +29,6 @@ const TNinePanel = () => {
   }, [inputNumbers]);
 
   const handleChange = (e) => {
-    console.log(suggestedWords);
     setInputNumbers({
       //* actual state
       ...inputNumbers,
@@ -77,6 +76,19 @@ const TNinePanel = () => {
           />
         </div>
       </form>
+
+      <div className=" mt-1">
+        <span
+          htmlFor="inputNumbers"
+          className="uppercase text-gray-600 block text-xl- font-bold"
+        >
+          Text
+        </span>
+        <p className="w-full mt-3 mb-5 p-3 border rounded-xl bg-gray-50">
+          {" "}
+          Texto aqui{" "}
+        </p>
+      </div>
       <div className="my-5 flex flex-wrap justify-center">
         {Object.entries(NUMBERS).map(([key, val]) => (
           <Keyboard
@@ -88,8 +100,8 @@ const TNinePanel = () => {
         ))}
       </div>
       {inputNumbers.numbers !== "" && (
-        <div className=" bg-white w-auto max-h-96 shadow flex overflow-y-auto md:h-40 flex-wrap rounded-lg px-5 py-3 ">
-          {suggestedWords !== 0 &&
+        <div className=" bg-white w-auto max-h-80 shadow flex overflow-y-auto  flex-wrap rounded-lg px-5 py-3 ">
+          {!suggestedWords.msg &&
             suggestedWords.map(
               (word) => word !== null && <WordBox key={word} word={word} />
             )}
