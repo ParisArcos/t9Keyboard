@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
-import axiosConfig from "../config/axios";
+import axios from "axios";
 
 import WordBox from "../components/WordBox";
 import Keyboard from "../components/Keyboard";
+import SynonymsBox from "../components/SynonymsBox";
 
 const TNinePanel = () => {
   const [inputNumbers, setInputNumbers] = useState({ numbers: "" });
   const [suggestedWords, setSuggestedWords] = useState([]);
+  const [synonyms, setSynonyms] = useState([]);
 
   const NUMBERS = {
     0: '" "',
@@ -26,7 +28,20 @@ const TNinePanel = () => {
     if (inputNumbers !== "") {
       APIcall(inputNumbers.numbers);
     }
+    setSynonyms([]);
   }, [inputNumbers]);
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (suggestedWords.length !== 0) {
+        suggestedWords.forEach((word) => {
+          findSynonyms(word);
+        });
+      }
+    }, 1500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [suggestedWords]);
 
   const handleChange = (e) => {
     setInputNumbers({
@@ -39,19 +54,38 @@ const TNinePanel = () => {
   const handleClick = (value) => {
     setInputNumbers({
       //* actual state
-
       numbers: (inputNumbers.numbers += value),
     });
   };
 
   const APIcall = async (data) => {
-    await axiosConfig.post("/suggested_words", { data }).then((res) => {
-      if (res.data.status === 401) {
-        Swal.fire("Something went wrong!", res.data.message, "error");
-      } else {
-        setSuggestedWords(res.data);
-      }
-    });
+    await axios
+      .post(`${process.env.REACT_APP_SERVER_URL}/suggested_words`, { data })
+      .then((res) => {
+        if (res.data.status === 401) {
+          Swal.fire("Something went wrong!", res.data.message, "error");
+        } else {
+          setSuggestedWords(res.data);
+        }
+      });
+  };
+
+  const findSynonyms = async (word) => {
+    await axios
+      .get(`${process.env.REACT_APP_SYNONYMS_URL}/${word}`)
+      .then((res) => {
+        res.data.forEach((response) => {
+          const suggestedSynonyms = response.meanings[0].synonyms;
+          if (suggestedSynonyms.length !== 0) {
+            setSynonyms([
+              ...synonyms,
+              suggestedSynonyms[
+                [Math.floor(Math.random() * suggestedSynonyms.length)]
+              ],
+            ]);
+          }
+        });
+      });
   };
 
   return (
@@ -77,18 +111,6 @@ const TNinePanel = () => {
         </div>
       </form>
 
-      <div className=" mt-1">
-        <span
-          htmlFor="inputNumbers"
-          className="uppercase text-gray-600 block text-xl- font-bold"
-        >
-          Text
-        </span>
-        <p className="w-full mt-3 mb-5 p-3 border rounded-xl bg-gray-50">
-          {" "}
-          Texto aqui{" "}
-        </p>
-      </div>
       <div className="my-5 flex flex-wrap justify-center">
         {Object.entries(NUMBERS).map(([key, val]) => (
           <Keyboard
@@ -104,6 +126,10 @@ const TNinePanel = () => {
           {!suggestedWords.msg &&
             suggestedWords.map(
               (word) => word !== null && <WordBox key={word} word={word} />
+            )}
+          {synonyms &&
+            synonyms.map(
+              (word) => word !== null && <SynonymsBox key={word} word={word} />
             )}
         </div>
       )}
